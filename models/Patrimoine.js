@@ -23,7 +23,6 @@ export default class Patrimoine {
         }
         month = month + year * 12;
 
-        
         let valeur_amortissement =
           (possession.valeur * possession.amortissement) / 100;
         let valeur_final = possession.valeur - year * valeur_amortissement;
