@@ -11,6 +11,19 @@ export default class Patrimoine {
         result += possession.valeur;
       } else {
         let year = date.getFullYear() - possession.date.getFullYear();
+        let month = date.getMonth() - possession.date.getMonth();
+        let day = date.getDate() - possession.date.getDate();
+
+        if (day < 0) {
+            month--;
+        }
+        if (month < 0) {
+            year--;
+            month += 12;
+        }
+        month = month + year * 12;
+
+        
         let valeur_amortissement =
           (possession.valeur * possession.amortissement) / 100;
         let valeur_final = possession.valeur - year * valeur_amortissement;
