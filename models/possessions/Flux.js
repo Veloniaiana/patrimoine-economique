@@ -7,6 +7,7 @@ export default class Flux extends Possession {
   // Si salaire => +
   // Si train de vie => -
   constructor(possesseur, libelle, valeur, dateDebut, dateFin, tauxAmortissement, jour) {
+    super(jour, dateDebut, libelle, dateFin, dateFin, dateFin);
     this.valeur = valeur;
     this.jour = jour;
     // this.source = source; // null || Compte

@@ -1,11 +1,11 @@
 import Possession from "./Possession.js";
-import { TYPES } from "../../constante.js";
+import {TYPE_ARGENT} from "../../constante.js";
 
 export default class Argent extends Possession {
   constructor(possesseur, libelle, valeur, dateDebut, dateFin, tauxAmortissement, type) {
     super(possesseur, libelle, valeur, dateDebut, dateFin, tauxAmortissement);
     try {
-      if (!TYPES.values().includes(type)) {
+      if (!Object.values(TYPE_ARGENT).includes(type)) {
         throw new Error("Type d'argent invalide");
       }
       this.type = type;
