@@ -2,11 +2,9 @@ import fs from 'node:fs/promises';
 
 async function readFile(path) {
   try {
-    const data = await fs.readFile(path, { encoding: 'utf8' });
-    return {
-      status: "OK",
-      data: JSON.parse(data),
-    };
+    const data = await fetch(path);
+    const json = await data.json();
+    return json;
   } catch (err) {
     return {
       status: "ERROR",
