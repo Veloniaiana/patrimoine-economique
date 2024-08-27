@@ -26,3 +26,13 @@ p{
   font-size: 1.3rem;
   margin-bottom: 10px;
 }
+Button{
+  width: 15vw;
+}
+.buttonList{
+  display: flex;
+  width: 10vw;
+}
+h1{
+  text-align: center;
+}

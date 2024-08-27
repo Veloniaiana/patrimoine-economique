@@ -5,14 +5,12 @@ import { URL } from 'node:url';
 const PORT = 3001;
 
 const server = http.createServer(async (req, res) => {
-    // Ajoutez les en-têtes CORS
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173'); // Remplacez par l'URL de votre frontend
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') {
-        // Répondre aux requêtes OPTIONS avec un statut 204
-        res.writeHead(204); // 204 No Content
+        res.writeHead(204);
         res.end();
         return;
     }
@@ -36,7 +34,6 @@ const server = http.createServer(async (req, res) => {
             const libelle = parsedUrl.pathname.split('/')[2];
 
             if (parsedUrl.pathname.endsWith('/update')) {
-                // Mise à jour de la date de fin
                 const body = [];
                 req.on('data', chunk => body.push(chunk));
                 req.on('end', async () => {
@@ -66,7 +63,6 @@ const server = http.createServer(async (req, res) => {
                     res.end(JSON.stringify({ status: 'OK' }));
                 });
             } else if (parsedUrl.pathname.endsWith('/close')) {
-                // Clore la possession en mettant à jour la date de fin à aujourd'hui
                 const fileData = await fs.readFile('../UI/public/data.json', 'utf8');
                 const jsonData = JSON.parse(fileData);
                 const patrimoine = jsonData.find(item => item.model === "Patrimoine");
@@ -93,14 +89,12 @@ const server = http.createServer(async (req, res) => {
                 res.end('Not Found');
             }
         } else if (parsedUrl.pathname === '/possessionCreation' && method === 'POST') {
-            // Création d'une nouvelle possession
             const body = [];
             req.on('data', chunk => body.push(chunk));
             req.on('end', async () => {
                 const data = Buffer.concat(body).toString();
                 const newPossession = JSON.parse(data);
 
-                // Définir le possesseur par défaut
                 newPossession.possesseur = newPossession.possesseur || 'John Doe';
 
                 const fileData = await fs.readFile('../UI/public/data.json', 'utf8');

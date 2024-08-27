@@ -1,16 +1,15 @@
 import { useState } from 'react';
 import { Button } from "react-bootstrap";
 import Possession from "../../models/possessions/Possession.js";
+import Patrimoine from "../../models/Patrimoine.js";
 import './App.css';
 
-const PossessionArray = [];
-
 function App() {
-    const [view, setView] = useState('home'); // 'home', 'creation', 'list', or 'update'
+    const [view, setView] = useState('home');
     const [possessions, setPossessions] = useState([]);
     const [url, setUrl] = useState('');
     const [newPossession, setNewPossession] = useState({
-        possesseur: 'John Doe', // Valeur par défaut
+        possesseur: 'John Doe',
         libelle: '',
         valeur: 0,
         dateDebut: '',
@@ -22,13 +21,19 @@ function App() {
         newDateFin: '',
     });
 
+    const [patrimoine, setPatrimoine] = useState(null);
+    const [date, setDate] = useState('');
+    const [dateDebutInput, setDateDebutInput] = useState('');
+    const [dateFinInput, setDateFinInput] = useState('');
+
     const fetchPossessions = async () => {
         try {
             const response = await fetch('http://localhost:3001/possessionListe');
             const data = await response.json();
             setPossessions(data);
             setUrl('/possessionListe');
-            setView('list'); // Affiche uniquement la liste et les boutons
+            setPatrimoine(new Patrimoine('John Doe', data));
+            setView('list');
         } catch (error) {
             console.error("Erreur lors de la récupération des possessions :", error);
         }
@@ -48,14 +53,14 @@ function App() {
             if (result.status === 'OK') {
                 alert('Possession créée avec succès');
                 setNewPossession({
-                    possesseur: 'John Doe', // Réinitialisation à la valeur par défaut
+                    possesseur: 'John Doe',
                     libelle: '',
                     valeur: 0,
                     dateDebut: '',
                     dateFin: '',
                     tauxAmortissement: 0,
                 });
-                setView('home'); // Retour au mode d'accueil
+                setView('home');
             } else {
                 alert('Erreur lors de la création de la possession');
             }
@@ -81,7 +86,7 @@ function App() {
                     libelle: '',
                     newDateFin: '',
                 });
-                setView('home'); // Retour au mode d'accueil
+                setView('home');
             } else {
                 alert('Erreur lors de la mise à jour de la possession');
             }
@@ -102,7 +107,7 @@ function App() {
             const result = await response.json();
             if (result.status === 'OK') {
                 alert('Possession clôturée avec succès');
-                fetchPossessions(); // Rafraîchir la liste des possessions
+                fetchPossessions();
             } else {
                 alert('Erreur lors de la clôture de la possession');
             }
@@ -110,14 +115,116 @@ function App() {
             console.error("Erreur lors de la clôture de la possession :", error);
         }
     };
+    const calculateValeurTotale = async () => {
+        try {
+            const response = await fetch('http://localhost:3001/possessionListe');
+            const data = await response.json();
+            let totalValeur = 0;
 
+            const possessions = data.map(item =>
+                new Possession(
+                    item.possesseur.nom,
+                    item.libelle,
+                    item.valeur,
+                    new Date(item.dateDebut),
+                    item.dateFin ? new Date(item.dateFin) : null,
+                    item.tauxAmortissement
+                )
+            );
+
+            possessions.forEach(possession => {
+                totalValeur += possession.getValeur(new Date(date));
+            });
+
+            alert(`La valeur totale du patrimoine à la date ${date} est de ${totalValeur} Ariary.`);
+        } catch (error) {
+            console.error("Erreur lors du calcul de la valeur totale du patrimoine :", error);
+            alert("Erreur lors du calcul de la valeur totale du patrimoine.");
+        }
+    };
+    const calculateValeurTotaleBetweenTwoDate = async () => {
+        try {
+            const response = await fetch('http://localhost:3001/possessionListe');
+            const data = await response.json();
+            let totalValeur = 0;
+            const dateDebut = new Date(dateDebutInput);
+            const dateFin = new Date(dateFinInput);
+
+            const possessions = data.map(item =>
+                new Possession(
+                    item.possesseur.nom,
+                    item.libelle,
+                    item.valeur,
+                    new Date(item.dateDebut),
+                    item.dateFin ? new Date(item.dateFin) : null,
+                    item.tauxAmortissement
+                )
+            );
+            const filteredPossessions = possessions.filter(item => {
+                return (item.dateDebut >= dateDebut) && (item.dateDebut <= dateFin);
+            });
+            console.log(filteredPossessions);
+
+            filteredPossessions.forEach(possession => {
+                totalValeur += possession.getValeur(new Date(dateFinInput));
+            });
+
+            alert(`La valeur totale du patrimoine entre ${dateDebutInput} et ${dateFinInput} est de ${totalValeur} Ariary.`);
+        } catch (error) {
+            console.error("Erreur lors du calcul de la valeur totale du patrimoine :", error);
+            alert("Erreur lors du calcul de la valeur totale du patrimoine.");
+        }
+    }
     return (
         <div className="App">
             <header className="App-header">
-                <Button onClick={() => setView('home')}>Accueil</Button>
-                <Button onClick={() => setView('creation')}>Créer une Possession</Button>
-                <Button onClick={() => fetchPossessions()}>Liste des Possessions</Button>
-                {view === 'home' && <div>Bienvenue dans l'application de gestion des possessions</div>}
+                <Button onClick={() => setView('patrimoine')}>Patrimoine</Button>
+                <Button onClick={() => setView('possession')}>Possession</Button>
+
+                {view === 'patrimoine' && (
+                    <div className={'patrimine'}>
+                        <h1>Patrimoine de John Doe</h1>
+                        <div className={'valeurTotal'}>
+                            <h4>Valeur totale du patrimoine à une date donnée</h4>
+                            <p>Veuillez saisir une date</p>
+                            <input
+                                type="date"
+                                value={date}
+                                onChange={(e) => setDate(e.target.value)}
+                            />
+                            <Button onClick={calculateValeurTotale}>Valider</Button>
+                            <h4>Valeur totale du patrimoine entre deux date</h4>
+                            <p>Veuillez saisr une date</p>
+                            <div className={'input'}>
+                                <p>Date de Debut</p>
+                                <input
+                                    type="date"
+                                    value={dateDebutInput}
+                                    onChange={(e) => setDateDebutInput(e.target.value)}
+                                />
+                            </div>
+                            <div className={'input'}>
+                                <p>Date de Fin</p>
+                                <input
+                                    type="date"
+                                    value={dateFinInput}
+                                    onChange={(e) => setDateFinInput(e.target.value)}
+                                />
+                            </div>
+                            <Button onClick={calculateValeurTotaleBetweenTwoDate}>Valider</Button>
+                        </div>
+                    </div>
+                )}
+
+                {view === 'possession' && (
+                    <div className={'possession'}>
+                        <Button onClick={() => setView('creation')}>Créer une Possession</Button>
+                        <Button onClick={fetchPossessions}>Liste des Possessions</Button>
+                    </div>
+                )}
+
+                {view === 'home' && <div>Bienvenue dans application de gestion des possessions</div>}
+
                 {view === 'creation' && (
                     <div className="creation-form">
                         <h2>Créer une nouvelle possession</h2>
@@ -154,6 +261,7 @@ function App() {
                         <Button onClick={createPossession}>Créer</Button>
                     </div>
                 )}
+
                 {view === 'update' && (
                     <div className="update-form">
                         <h2>Mettre à jour une possession</h2>
@@ -172,6 +280,7 @@ function App() {
                         <Button onClick={updatePossessionDateFin}>Mettre à jour</Button>
                     </div>
                 )}
+
                 {view === 'list' && (
                     <div className="list-view">
                         <h2>Liste des possessions</h2>
@@ -191,9 +300,9 @@ function App() {
                             {possessions.map((possession, index) => {
                                 const valeur = new Possession(
                                     possession.possesseur.nom, possession.libelle, possession.valeur, new Date(possession.dateDebut),
-                                    (possession.dateFin !== null ? new Date(possession.dateFin) : null), possession.tauxAmortissement
+                                    (possession.dateFin !== null ? new Date(possession.dateFin)
+                                        : null), possession.tauxAmortissement
                                 );
-                                PossessionArray.push(valeur);
                                 return (
                                     <tr key={index}>
                                         <td>{valeur.libelle}</td>
@@ -202,8 +311,9 @@ function App() {
                                         <td>{valeur.dateFin === null ? 'null' : new Date(valeur.dateFin).toLocaleDateString()}</td>
                                         <td>{valeur.tauxAmortissement !== null ? valeur.tauxAmortissement : 'null'}</td>
                                         <td>{valeur.getValeur(new Date())}</td>
-                                        <td>
+                                        <td className={"buttonList"}>
                                             <Button onClick={() => closePossession(valeur.libelle)}>Clore</Button>
+                                            <Button onClick={()=>setView("update")}>Edit</Button>
                                         </td>
                                     </tr>
                                 );
