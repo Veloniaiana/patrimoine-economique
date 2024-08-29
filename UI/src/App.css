@@ -1,16 +1,17 @@
 #root {
-  max-width: 1280px;
   margin: 0;
   padding: 0;
   top: 0;
   position: fixed;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100%;
 }
 .body{
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
 }
 input{
   width: 13vw;
@@ -18,21 +19,44 @@ input{
   text-align: center;
   font-size: 1vw;
 }
-Button{
-  height: 4vh;
-  width: 5vw;
-}
 p{
   font-size: 1.3rem;
   margin-bottom: 10px;
 }
 Button{
   width: 15vw;
+  height: 4vh;
 }
 .buttonList{
   display: flex;
   width: 10vw;
 }
+App{
+  width: 100%;
+}
 h1{
   text-align: center;
+}
+.nav{
+  width: 100%;
+  margin-top: 3vh;
+}
+.nav Button{
+  margin-left: 3vw;
+}
+.home_text{
+  width: 70%;
+  margin-top: 2vh;
+  margin-bottom: 5vh;
+}
+.patrimoine h4{
+  text-align: center;
+  width: 100%;
+  margin-top: 2vh;
+}
+.possession .button{
+  width: 80%;
+}
+.possession .button Button{
+  margin-left: 3vw;
 }

@@ -5,6 +5,7 @@ import Patrimoine from "../../models/Patrimoine.js";
 import { Line } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import './App.css';
+import Home from "./Page/Home.jsx";
 
 function App() {
     const [view, setView] = useState('home');
@@ -181,11 +182,9 @@ function App() {
     return (
         <div className="App">
             <header className="App-header">
-                <Button onClick={() => setView('patrimoine')}>Patrimoine</Button>
-                <Button onClick={() => setView('possession')}>Possession</Button>
-
+                {view === 'home' && <Home/>}
                 {view === 'patrimoine' && (
-                    <div className={'patrimine'}>
+                    <div className={'patrimoine'}>
                         <h1>Patrimoine de John Doe</h1>
                         <div className={'valeurTotal'}>
                             <h4>Valeur totale du patrimoine à une date donnée</h4>
@@ -196,6 +195,7 @@ function App() {
                                 onChange={(e) => setDate(e.target.value)}
                             />
                             <Button onClick={calculateValeurTotale}>Valider</Button>
+                            <h4>Patrimoine Chart</h4>
                             <div className="chart-filters">
                                 <p>Veuillez saisir une plage de dates et sélectionner un jour :</p>
                                 <input
@@ -222,7 +222,7 @@ function App() {
                             </div>
                             {chartData && (
                                 <div className="chart-container">
-                                    <Line data={chartData} />
+                                    <Line data={chartData}/>
                                 </div>
                             )}
                         </div>
@@ -230,13 +230,15 @@ function App() {
                 )}
 
                 {view === 'possession' && (
-                    <div className={'possession'}>
-                        <Button onClick={() => setView('creation')}>Créer une Possession</Button>
-                        <Button onClick={fetchPossessions}>Liste des Possessions</Button>
+                    <div className={'possession w-100 d-flex align-items-center text-center justify-content-center flex-column'}>
+                        <h1 className={'mb-4'}>John Doe Possessions</h1>
+                        <p>Ici, on peut voir les listes des possessions de John Doe et aussi creer une nouvelle possession</p>
+                        <div className={'button d-flex align-items-center flex-row text-center justify-content-center'}>
+                            <Button onClick={() => setView('creation')}>Créer une Possession</Button>
+                            <Button onClick={fetchPossessions}>Liste des Possessions</Button>
+                        </div>
                     </div>
                 )}
-
-                {view === 'home' && <div>Bienvenue dans application de gestion des possessions</div>}
 
                 {view === 'creation' && (
                     <div className="creation-form">
@@ -335,6 +337,11 @@ function App() {
                         </table>
                     </div>
                 )}
+                <div className={'nav w-100 d-flex justify-content-center align-items-center'}>
+                    <Button onClick={() => setView('home')}>Acceuil</Button>
+                    <Button onClick={() => setView('patrimoine')}>Patrimoine</Button>
+                    <Button onClick={() => setView('possession')}>Possession</Button>
+                </div>
             </header>
         </div>
     );
