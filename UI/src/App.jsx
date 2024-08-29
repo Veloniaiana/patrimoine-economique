@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Button } from "react-bootstrap";
 import Possession from "../../models/possessions/Possession.js";
 import Patrimoine from "../../models/Patrimoine.js";
+import { Line } from 'react-chartjs-2';
+import Chart from 'chart.js/auto';
 import './App.css';
 
 function App() {
@@ -23,8 +25,10 @@ function App() {
 
     const [patrimoine, setPatrimoine] = useState(null);
     const [date, setDate] = useState('');
-    const [dateDebutInput, setDateDebutInput] = useState('');
-    const [dateFinInput, setDateFinInput] = useState('');
+    const [dateDebut, setDateDebut] = useState('');
+    const [dateFin, setDateFin] = useState('');
+    const [selectedDay, setSelectedDay] = useState('');
+    const [chartData, setChartData] = useState(null);
 
     const fetchPossessions = async () => {
         try {
@@ -142,39 +146,38 @@ function App() {
             alert("Erreur lors du calcul de la valeur totale du patrimoine.");
         }
     };
-    const calculateValeurTotaleBetweenTwoDate = async () => {
+    const handleValidate = async () => {
         try {
             const response = await fetch('http://localhost:3001/possessionListe');
             const data = await response.json();
-            let totalValeur = 0;
-            const dateDebut = new Date(dateDebutInput);
-            const dateFin = new Date(dateFinInput);
 
-            const possessions = data.map(item =>
-                new Possession(
-                    item.possesseur.nom,
-                    item.libelle,
-                    item.valeur,
-                    new Date(item.dateDebut),
-                    item.dateFin ? new Date(item.dateFin) : null,
-                    item.tauxAmortissement
-                )
+            const patrimoineInstance = new Patrimoine('John Doe', data);
+            const patrimoineData = patrimoineInstance.getValeurByDateRange(
+                new Date(dateDebut),
+                new Date(dateFin)
             );
-            const filteredPossessions = possessions.filter(item => {
-                return (item.dateDebut >= dateDebut) && (item.dateDebut <= dateFin);
+            const labels = patrimoineData.flatMap(item =>
+                item.valeurs.map(v => v.date.toLocaleDateString())
+            );
+            const values = patrimoineData.flatMap(item =>
+                item.valeurs.map(v => v.valeur)
+            );
+            setChartData({
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Valeur du Patrimoine',
+                        data: values,
+                        borderColor: 'rgba(75,192,192,1)',
+                        backgroundColor: 'rgba(75,192,192,0.2)',
+                        fill: false,
+                    },
+                ],
             });
-            console.log(filteredPossessions);
-
-            filteredPossessions.forEach(possession => {
-                totalValeur += possession.getValeur(new Date(dateFinInput));
-            });
-
-            alert(`La valeur totale du patrimoine entre ${dateDebutInput} et ${dateFinInput} est de ${totalValeur} Ariary.`);
         } catch (error) {
-            console.error("Erreur lors du calcul de la valeur totale du patrimoine :", error);
-            alert("Erreur lors du calcul de la valeur totale du patrimoine.");
+            console.error("Erreur lors de la récupération des données pour le chart :", error);
         }
-    }
+    };
     return (
         <div className="App">
             <header className="App-header">
@@ -193,25 +196,35 @@ function App() {
                                 onChange={(e) => setDate(e.target.value)}
                             />
                             <Button onClick={calculateValeurTotale}>Valider</Button>
-                            <h4>Valeur totale du patrimoine entre deux date</h4>
-                            <p>Veuillez saisr une date</p>
-                            <div className={'input'}>
-                                <p>Date de Debut</p>
+                            <div className="chart-filters">
+                                <p>Veuillez saisir une plage de dates et sélectionner un jour :</p>
                                 <input
                                     type="date"
-                                    value={dateDebutInput}
-                                    onChange={(e) => setDateDebutInput(e.target.value)}
+                                    value={dateDebut}
+                                    onChange={(e) => setDateDebut(e.target.value)}
                                 />
-                            </div>
-                            <div className={'input'}>
-                                <p>Date de Fin</p>
                                 <input
                                     type="date"
-                                    value={dateFinInput}
-                                    onChange={(e) => setDateFinInput(e.target.value)}
+                                    value={dateFin}
+                                    onChange={(e) => setDateFin(e.target.value)}
                                 />
+                                <select value={selectedDay} onChange={(e) => setSelectedDay(e.target.value)}>
+                                    <option value="">Sélectionnez un jour</option>
+                                    <option value="Lundi">Lundi</option>
+                                    <option value="Mardi">Mardi</option>
+                                    <option value="Mercredi">Mercredi</option>
+                                    <option value="Jeudi">Jeudi</option>
+                                    <option value="Vendredi">Vendredi</option>
+                                    <option value="Samedi">Samedi</option>
+                                    <option value="Dimanche">Dimanche</option>
+                                </select>
+                                <Button onClick={handleValidate}>Valider</Button>
                             </div>
-                            <Button onClick={calculateValeurTotaleBetweenTwoDate}>Valider</Button>
+                            {chartData && (
+                                <div className="chart-container">
+                                    <Line data={chartData} />
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

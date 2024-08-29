@@ -28,3 +28,4 @@ export default class Possession {
     return result;
   }
 }
+

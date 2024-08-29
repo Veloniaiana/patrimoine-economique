@@ -30,6 +30,40 @@ const server = http.createServer(async (req, res) => {
 
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(patrimoine.data.possessions));
+        }else if (parsedUrl.pathname === '/patrimoineValeur' && method === 'POST') {
+            const body = [];
+            req.on('data', chunk => body.push(chunk));
+            req.on('end', async () => {
+                const { dateDebut, dateFin, jour } = JSON.parse(Buffer.concat(body).toString());
+
+                const data = await fs.readFile('../UI/public/data.json', 'utf8');
+                const jsonData = JSON.parse(data);
+                const patrimoine = jsonData.find(item => item.model === "Patrimoine");
+
+                if (!patrimoine) {
+                    throw new Error('Données de patrimoine non trouvées dans le fichier JSON');
+                }
+
+                const possessions = patrimoine.data.possessions;
+                let valeurTotale = 0;
+
+                possessions.forEach(possession => {
+                    const possessionInstance = new Possession(
+                        possession.possesseur,
+                        possession.libelle,
+                        possession.valeur,
+                        new Date(possession.dateDebut),
+                        possession.dateFin ? new Date(possession.dateFin) : null,
+                        possession.tauxAmortissement
+                    );
+
+                    const valeurByDate = getValeurByDateRange(possessions, new Date(dateDebut), new Date(dateFin));
+                    valeurTotale += valeurByDate;
+                });
+
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ valeurTotale }));
+            });
         } else if (parsedUrl.pathname.startsWith('/possession/') && method === 'PUT') {
             const libelle = parsedUrl.pathname.split('/')[2];
 
