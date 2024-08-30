@@ -297,9 +297,9 @@ function App() {
                 )}
 
                 {view === 'list' && (
-                    <div className="list-view">
+                    <div className="list-view w-100 d-flex flex-column align-items-center justify-content-center">
                         <h2>Liste des possessions</h2>
-                        <table className="table table-striped w-75 align-items-center">
+                        <table className="table table-striped align-items-center">
                             <thead>
                             <tr>
                                 <th>Libelle</th>

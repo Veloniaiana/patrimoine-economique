@@ -60,3 +60,6 @@ h1{
 .possession .button Button{
   margin-left: 3vw;
 }
+.list-view table{
+  width: 100%;
+}
