@@ -335,6 +335,7 @@ function App() {
                             })}
                             </tbody>
                         </table>
+                        <Button onClick={() => setView('creation')}>Créer une Possession</Button>
                     </div>
                 )}
                 <div className={'nav w-100 d-flex justify-content-center align-items-center'}>
