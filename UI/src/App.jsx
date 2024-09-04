@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Button } from "react-bootstrap";
-import Possession from "../../models/possessions/Possession.js";
-import Patrimoine from "../../models/Patrimoine.js";
 import { Line } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import './App.css';
 import Home from "./Page/Home.jsx";
+import Possession from "../models/possessions/Possession.js";
+import Patrimoine from "../models/Patrimoine.js";
 
 function App() {
     const [view, setView] = useState('home');

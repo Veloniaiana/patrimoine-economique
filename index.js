@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "./data/index.js";
+import { readFile, writeFile } from "./UI/public/index.js";
 import Patrimoine from "./models/Patrimoine.js";
 import Personne from "./models/Personne.js";
 import Flux from "./models/possessions/Flux.js";

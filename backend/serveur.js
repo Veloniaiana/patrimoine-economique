@@ -1,6 +1,7 @@
 import http from 'node:http';
 import fs from 'node:fs/promises';
 import { URL } from 'node:url';
+import Possession from "./models/possessions/Possession.js";
 
 const PORT = 3001;
 
