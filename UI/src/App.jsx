@@ -339,7 +339,9 @@ function App() {
                                         <td>{valeur.tauxAmortissement !== null ? valeur.tauxAmortissement : 'null'}</td>
                                         <td>{valeur.getValeur(new Date())}</td>
                                         <td className={"buttonList"}>
-                                            <Button onClick={() => closePossession(valeur.libelle)}>Clore</Button>
+                                            <Button onClick={() => closePossession(valeur.libelle)}
+                                                    className={"btn-danger"}
+                                            >Fermer</Button>
                                             <Button onClick={() => {
                                                 setUpdatePossession({
                                                     libelle: valeur.libelle,
@@ -347,7 +349,7 @@ function App() {
                                                     newDateFin: ''
                                                 });
                                                 setView('update');
-                                            }}>Edit</Button>
+                                            }}>Editer</Button>
                                         </td>
                                     </tr>
                                 );
