@@ -21,6 +21,7 @@ function App() {
     });
     const [updatePossession, setUpdatePossession] = useState({
         libelle: '',
+        newLibelle: '',  // Nouveau champ pour le nouveau libellé
         newDateFin: '',
     });
 
@@ -74,31 +75,36 @@ function App() {
         }
     };
 
-    const updatePossessionDateFin = async () => {
+    const handleUpdatePossession = async (libelle) => {
         try {
-            const response = await fetch(`http://localhost:3001/possession/${updatePossession.libelle}/update`, {
+            const response = await fetch(`http://localhost:3001/possession/${libelle}/update`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ dateFin: updatePossession.newDateFin }),
+                body: JSON.stringify({
+                    newLibelle: updatePossession.newLibelle,
+                    newDateFin: updatePossession.newDateFin
+                }),
             });
-
-            const result = await response.json();
-            if (result.status === 'OK') {
+            if (response.ok) {
                 alert('Possession mise à jour avec succès');
                 setUpdatePossession({
                     libelle: '',
+                    newLibelle: '',
                     newDateFin: '',
                 });
-                setView('home');
+                fetchPossessions(); // Rafraîchir la liste des possessions
+                setView('list'); // Retourner à la vue de la liste
             } else {
                 alert('Erreur lors de la mise à jour de la possession');
             }
         } catch (error) {
             console.error("Erreur lors de la mise à jour de la possession :", error);
+            alert("Erreur lors de la mise à jour de la possession.");
         }
     };
+
 
     const closePossession = async (libelle) => {
         try {
@@ -282,19 +288,22 @@ function App() {
                         <h2>Mettre à jour une possession</h2>
                         <input
                             type="text"
-                            value={updatePossession.libelle}
-                            onChange={(e) => setUpdatePossession({ ...updatePossession, libelle: e.target.value })}
-                            placeholder="Libelle"
+                            placeholder="Nouveau libellé"
+                            value={updatePossession.newLibelle}
+                            onChange={(e) => setUpdatePossession({ ...updatePossession, newLibelle: e.target.value })}
                         />
                         <input
                             type="date"
+                            placeholder="Nouvelle date de fin"
                             value={updatePossession.newDateFin}
                             onChange={(e) => setUpdatePossession({ ...updatePossession, newDateFin: e.target.value })}
-                            placeholder="Nouvelle Date Fin"
                         />
-                        <Button onClick={updatePossessionDateFin}>Mettre à jour</Button>
+                        <Button onClick={() => handleUpdatePossession(updatePossession.libelle)}>Mettre à jour</Button>
+                        <Button onClick={() => setView('list')}>Retour à la liste</Button>
                     </div>
                 )}
+
+
 
                 {view === 'list' && (
                     <div className="list-view w-100 d-flex flex-column align-items-center justify-content-center">
@@ -314,9 +323,12 @@ function App() {
                             <tbody>
                             {possessions.map((possession, index) => {
                                 const valeur = new Possession(
-                                    possession.possesseur.nom, possession.libelle, possession.valeur, new Date(possession.dateDebut),
-                                    (possession.dateFin !== null ? new Date(possession.dateFin)
-                                        : null), possession.tauxAmortissement
+                                    possession.possesseur.nom,
+                                    possession.libelle,
+                                    possession.valeur,
+                                    new Date(possession.dateDebut),
+                                    (possession.dateFin !== null ? new Date(possession.dateFin) : null),
+                                    possession.tauxAmortissement
                                 );
                                 return (
                                     <tr key={index}>
@@ -328,7 +340,14 @@ function App() {
                                         <td>{valeur.getValeur(new Date())}</td>
                                         <td className={"buttonList"}>
                                             <Button onClick={() => closePossession(valeur.libelle)}>Clore</Button>
-                                            <Button onClick={()=>setView("update")}>Edit</Button>
+                                            <Button onClick={() => {
+                                                setUpdatePossession({
+                                                    libelle: valeur.libelle,
+                                                    newLibelle: '',
+                                                    newDateFin: ''
+                                                });
+                                                setView('update');
+                                            }}>Edit</Button>
                                         </td>
                                     </tr>
                                 );
@@ -338,6 +357,8 @@ function App() {
                         <Button onClick={() => setView('creation')}>Créer une Possession</Button>
                     </div>
                 )}
+
+
                 <div className={'nav w-100 d-flex justify-content-center align-items-center'}>
                     <Button onClick={() => setView('home')}>Acceuil</Button>
                     <Button onClick={() => setView('patrimoine')}>Patrimoine</Button>
