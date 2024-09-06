@@ -94,8 +94,8 @@ function App() {
                     newLibelle: '',
                     newDateFin: '',
                 });
-                fetchPossessions(); // Rafraîchir la liste des possessions
-                setView('list'); // Retourner à la vue de la liste
+                fetchPossessions();
+                setView('list');
             } else {
                 alert('Erreur lors de la mise à jour de la possession');
             }

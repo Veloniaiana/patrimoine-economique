@@ -21,7 +21,7 @@ const server = http.createServer(async (req, res) => {
         const method = req.method;
 
         if (parsedUrl.pathname === '/possessionListe' && method === 'GET') {
-            const data = await fs.readFile('../UI/public/data.json', 'utf8');
+            const data = await fs.readFile('./data.json', 'utf8');
             const jsonData = JSON.parse(data);
             const patrimoine = jsonData.find(item => item.model === "Patrimoine");
 
@@ -37,7 +37,7 @@ const server = http.createServer(async (req, res) => {
             req.on('end', async () => {
                 const { dateDebut, dateFin, jour } = JSON.parse(Buffer.concat(body).toString());
 
-                const data = await fs.readFile('../UI/public/data.json', 'utf8');
+                const data = await fs.readFile('./data.json', 'utf8');
                 const jsonData = JSON.parse(data);
                 const patrimoine = jsonData.find(item => item.model === "Patrimoine");
 
@@ -58,7 +58,7 @@ const server = http.createServer(async (req, res) => {
                         possession.tauxAmortissement
                     );
 
-                    const valeurByDate = getValeurByDateRange(possessions, new Date(dateDebut), new Date(dateFin));
+                    const valeurByDate = possessions.getValeurByDateRange(new Date(dateDebut), new Date(dateFin));
                     valeurTotale += valeurByDate;
                 });
 
@@ -74,7 +74,7 @@ const server = http.createServer(async (req, res) => {
 
                 newPossession.possesseur = newPossession.possesseur || 'John Doe';
 
-                const fileData = await fs.readFile('../UI/public/data.json', 'utf8');
+                const fileData = await fs.readFile('./data.json', 'utf8');
                 const jsonData = JSON.parse(fileData);
                 const patrimoine = jsonData.find(item => item.model === "Patrimoine");
 
@@ -84,7 +84,7 @@ const server = http.createServer(async (req, res) => {
 
                 patrimoine.data.possessions.push(newPossession);
 
-                await fs.writeFile('../UI/public/data.json', JSON.stringify(jsonData), 'utf8');
+                await fs.writeFile('./data.json', JSON.stringify(jsonData), 'utf8');
 
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ status: 'OK' }));
@@ -100,7 +100,7 @@ const server = http.createServer(async (req, res) => {
                     const { newLibelle, newDateFin } = JSON.parse(Buffer.concat(body).toString());
 
                     try {
-                        const fileData = await fs.readFile('../UI/public/data.json', 'utf8');
+                        const fileData = await fs.readFile('./data.json', 'utf8');
                         const jsonData = JSON.parse(fileData);
                         const patrimoine = jsonData.find(item => item.model === "Patrimoine");
 
@@ -117,10 +117,14 @@ const server = http.createServer(async (req, res) => {
                             return;
                         }
 
-                        possession.libelle = newLibelle;
+                        if(newLibelle !== ""){
+                            possession.libelle = newLibelle
+                        }if(newLibelle === ""){
+                            possession.libelle = libelle
+                        }
                         possession.dateFin = newDateFin ? new Date(newDateFin).toISOString() : null;
 
-                        await fs.writeFile('../UI/public/data.json', JSON.stringify(jsonData), 'utf8');
+                        await fs.writeFile('./data.json', JSON.stringify(jsonData), 'utf8');
 
                         res.writeHead(200, { 'Content-Type': 'application/json' });
                         res.end(JSON.stringify({ status: 'OK' }));
@@ -138,7 +142,7 @@ const server = http.createServer(async (req, res) => {
                 req.on('data', chunk => body.push(chunk));
                 req.on('end', async () => {
                     try {
-                        const fileData = await fs.readFile('../UI/public/data.json', 'utf8');
+                        const fileData = await fs.readFile('./data.json', 'utf8');
                         const jsonData = JSON.parse(fileData);
                         const patrimoine = jsonData.find(item => item.model === "Patrimoine");
 
@@ -154,11 +158,9 @@ const server = http.createServer(async (req, res) => {
                             res.end(JSON.stringify({ status: 'ERROR', message: 'Possession non trouvée' }));
                             return;
                         }
-
-                        // Met à jour la date de fin avec la date actuelle
                         possession.dateFin = new Date().toISOString();
 
-                        await fs.writeFile('../UI/public/data.json', JSON.stringify(jsonData), 'utf8');
+                        await fs.writeFile('./data.json', JSON.stringify(jsonData), 'utf8');
 
                         res.writeHead(200, { 'Content-Type': 'application/json' });
                         res.end(JSON.stringify({ status: 'OK' }));
