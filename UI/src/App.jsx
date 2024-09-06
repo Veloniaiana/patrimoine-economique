@@ -34,7 +34,7 @@ function App() {
 
     const fetchPossessions = async () => {
         try {
-            const response = await fetch('http://localhost:3001/possessionListe');
+            const response = await fetch('https://patrimoine-backend-fxxb.onrender.com/possessionListe');
             const data = await response.json();
             setPossessions(data);
             setUrl('/possessionListe');
@@ -47,7 +47,7 @@ function App() {
 
     const createPossession = async () => {
         try {
-            const response = await fetch('http://localhost:3001/possessionCreation', {
+            const response = await fetch('https://patrimoine-backend-fxxb.onrender.com/possessionCreation', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -77,7 +77,7 @@ function App() {
 
     const handleUpdatePossession = async (libelle) => {
         try {
-            const response = await fetch(`http://localhost:3001/possession/${libelle}/update`, {
+            const response = await fetch(`https://patrimoine-backend-fxxb.onrender.com/possession/${libelle}/update`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -108,7 +108,7 @@ function App() {
 
     const closePossession = async (libelle) => {
         try {
-            const response = await fetch(`http://localhost:3001/possession/${libelle}/close`, {
+            const response = await fetch(`https://patrimoine-backend-fxxb.onrender.com/possession/${libelle}/close`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -128,7 +128,7 @@ function App() {
     };
     const calculateValeurTotale = async () => {
         try {
-            const response = await fetch('http://localhost:3001/possessionListe');
+            const response = await fetch('https://patrimoine-backend-fxxb.onrender.com/possessionListe');
             const data = await response.json();
             let totalValeur = 0;
 
@@ -155,7 +155,7 @@ function App() {
     };
     const handleValidate = async () => {
         try {
-            const response = await fetch('http://localhost:3001/possessionListe');
+            const response = await fetch('https://patrimoine-backend-fxxb.onrender.com/possessionListe');
             const data = await response.json();
 
             const patrimoineInstance = new Patrimoine('John Doe', data);
